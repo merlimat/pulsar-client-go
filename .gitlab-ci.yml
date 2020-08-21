@@ -1,0 +1,9 @@
+
+
+tag_release:
+  image: apachepulsar/pulsar-build:latest
+  stage: deploy
+  only:
+    - /^.*streamlio.*$/
+  script:
+    - ./splunk-tag-release.sh
