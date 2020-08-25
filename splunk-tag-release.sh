@@ -14,8 +14,7 @@ if [ -z "$SSH_PRIVATE_KEY" ]; then
 fi
 
 # Use Splunk internal module name
-find . -name '*.go' | \
-  xargs sed -i 's/github\.com\/apache\/pulsar-client-go/cd\.splunkdev\.com\/streamlio\/pulsar-client-go/g' go.mod
+find . -name '*.go' | xargs sed -i 's/github\.com\/apache\/pulsar-client-go/cd\.splunkdev\.com\/streamlio\/pulsar-client-go/g' go.mod oauth2/go.mod
 
 TAG=v0.1-$CI_JOB_ID
 
