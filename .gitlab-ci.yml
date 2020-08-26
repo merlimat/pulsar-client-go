@@ -1,7 +1,7 @@
 
 
 tag_release:
-  image: apachepulsar/pulsar-build:latest
+  image: golang:1.14
   stage: deploy
   only:
     - /^.*streamlio.*$/
