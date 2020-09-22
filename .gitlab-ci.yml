@@ -1,9 +1,51 @@
 
+stages:
+  - ci
+  - check
+  - deploy
 
-tag_release:
-  image: golang:1.14
-  stage: deploy
-  only:
-    - /^.*streamlio.*$/
+# tag_release:
+#   image: golang:1.14
+#   stage: deploy
+#   only:
+#     - /^.*streamlio.*$/
+#   script:
+#     - ./splunk-tag-release.sh
+
+run_ci:
+  image: "golang:1.15.2-buster"
+  stage: ci
   script:
-    - ./splunk-tag-release.sh
+    - go mod download
+    - go build ./pulsar
+    - go build -o pulsar-perf ./perf
+
+include:
+  - project: 'prodsec/whitesource'
+    ref: latest
+    file: '/templates/.whitesource.yml'
+  - project: 'prodsec/scp-scanning/gitlab-checkmarx'
+    ref: latest
+    file: '/templates/.sast_scan.yml'
+
+whitesource:
+  extends: .whitesource
+  stage: check
+  variables:
+    ws_user_key: ${WHITESOURCE_USER_KEY}
+    product_id: ${WHITESOURCE_ID}
+    config: go-dep
+  only:
+    refs:
+      - /^.*streamlio.*$/
+
+sast-scanner:
+  extends: .sast_scan
+  stage: check
+  timeout: 120 mins
+  variables:
+    CX_PROJECT_ID: 10536
+    TRANSPILE_JSX: 1
+  only:
+    refs:
+      - /^.*streamlio.*$/
